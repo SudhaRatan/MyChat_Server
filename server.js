@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
     // console.log(io.sockets.adapter.rooms.keys(),io.sockets.adapter.rooms.values());
     io.sockets
       .in(data.to)
-      .emit("new_message", { message: data.message, from: data.from });
+      .emit("new_message", { message: data.message, from: data.from, date: data.date, time: data.time });
   });
 });
 server.listen(port, () => {
