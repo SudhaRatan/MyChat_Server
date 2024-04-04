@@ -18,14 +18,14 @@ app.use(cors(corsOptions));
 // app.use(bodyParser.urlencoded({ extended: true,limit: '50mb' }))
 app.use(express.json({ limit: "50mb" }));
 // DB setup
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 mongoose.connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true,
-    family: 4,
-})
-const db = mongoose.connection
-db.on('error', error => console.error(error))
-db.once('open', () => console.log("Connected to mongoose"))
+  useNewUrlParser: true,
+  family: 4,
+});
+const db = mongoose.connection;
+db.on("error", (error) => console.error(error));
+db.once("open", () => console.log("Connected to mongoose"));
 
 const io = new Server(server, { cors: { origin: "*" } });
 
@@ -53,21 +53,28 @@ io.on("connection", (socket) => {
     socket.join(data.number);
   });
 
-  socket.on("message", async(data) => {
+  socket.on("message", async (data) => {
     console.log(data);
-    var user = await User.findOne({number: data.to})
+    var user = await User.findOne({ number: data.to });
     // console.log(io.sockets.adapter.rooms.keys(),io.sockets.adapter.rooms.values());
-    axios.post("https://api.expo.dev/v2/push/send?useFcmV1=true",{
+    if (user?.expoNotificationToken) {
+      axios.post("https://api.expo.dev/v2/push/send?useFcmV1=true", {
         sound: "default",
         to: user.expoNotificationToken,
         title: data.name,
-        body: data.message
-    })
+        body: data.message,
+      });
+    }
     io.sockets
       .in(data.to)
-      .emit("new_message", { message: data.message, from: data.from, date: data.date, time: data.time });
+      .emit("new_message", {
+        message: data.message,
+        from: data.from,
+        date: data.date,
+        time: data.time,
+      });
   });
 });
-server.listen(port, function(){
+server.listen(port, function () {
   console.log(`Running on port ${this.address().port}`);
 });
