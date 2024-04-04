@@ -11,7 +11,7 @@ const verifyJWT = (req, res, next) => {
                 
             } else {
                 // console.log(decoded)
-                req.userId = decoded.id
+                req.userId = decoded._id
                 next()
             }
         })
