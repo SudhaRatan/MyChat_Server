@@ -68,6 +68,6 @@ io.on("connection", (socket) => {
       .emit("new_message", { message: data.message, from: data.from, date: data.date, time: data.time });
   });
 });
-server.listen(port, () => {
+server.listen(port, function(){
   console.log(`Running on port ${this.address().port}`);
 });
